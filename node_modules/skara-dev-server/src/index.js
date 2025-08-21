@@ -1,0 +1,392 @@
+import express from 'express';
+import { WebSocketServer } from 'ws';
+import chokidar from 'chokidar';
+import { build } from 'esbuild';
+import fs from 'fs/promises';
+import path from 'path';
+import chalk from 'chalk';
+import mime from 'mime-types';
+import postcss from 'postcss';
+import tailwindcss from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
+
+export class SkaraDevServer {
+  constructor(options = {}) {
+    this.port = options.port || 3000;
+    this.root = options.root || process.cwd();
+    this.app = express();
+    this.wss = null;
+    this.server = null;
+    this.watchers = [];
+  }
+
+  async start() {
+    console.log(chalk.blue('🏛️  Starting Skara Dev Server...'));
+    console.log(chalk.gray('Ancient wisdom meets modern development\n'));
+
+    // Setup WebSocket for hot reload
+    this.server = this.app.listen(this.port, () => {
+      console.log(chalk.green(`✅ Server running at http://localhost:${this.port}`));
+      console.log(chalk.gray('Like Skara Brae, built to last! 🏛️\n'));
+    });
+
+    this.wss = new WebSocketServer({ server: this.server });
+    
+    // Setup file watching
+    this.setupWatcher();
+    
+    // Setup middleware
+    this.setupMiddleware();
+  }
+
+  setupMiddleware() {
+    // Handle Skara file extensions BEFORE static middleware
+    this.app.get('*', async (req, res) => {
+      console.log(chalk.cyan(`📥 Request: ${req.path}`));
+      try {
+        const filePath = path.join(this.root, req.path);
+        
+        // Handle different file types
+        if (req.path.endsWith('.sjs')) {
+          await this.serveSkaraJS(filePath, res);
+        } else if (req.path.endsWith('.ssx')) {
+          await this.serveSkaraJSX(filePath, res);
+        } else if (req.path.endsWith('.ss')) {
+          await this.serveSkaraCSS(filePath, res);
+        } else if (req.path === '/' || req.path.endsWith('.html')) {
+          await this.serveHTML(filePath, res);
+        } else if (req.path.startsWith('/node_modules/')) {
+          // Handle node_modules requests
+          await this.serveNodeModule(req.path, res);
+        } else if (req.path.startsWith('/packages/')) {
+          // Handle packages requests (for monorepo structure)
+          await this.servePackage(req.path, res);
+        } else if (req.path === '/favicon.ico') {
+          // Simple favicon handler to avoid 404s
+          res.status(204).send();
+        } else if (req.path.endsWith('.js')) {
+          // Handle regular JS files
+          try {
+            const content = await fs.readFile(filePath, 'utf-8');
+            res.setHeader('Content-Type', 'application/javascript');
+            res.send(content);
+          } catch (error) {
+            res.status(404).send('File not found');
+          }
+        } else if (req.path.endsWith('.css')) {
+          // Handle regular CSS files
+          try {
+            const content = await fs.readFile(filePath, 'utf-8');
+            res.setHeader('Content-Type', 'text/css');
+            res.send(content);
+          } catch (error) {
+            res.status(404).send('File not found');
+          }
+        } else {
+          // Try to serve as static file
+          try {
+            const stats = await fs.stat(filePath);
+            if (stats.isFile()) {
+              const content = await fs.readFile(filePath);
+              let mimeType = mime.lookup(filePath);
+              
+              // Override MIME types for specific extensions
+              if (req.path.endsWith('.js') || req.path.endsWith('.mjs')) {
+                mimeType = 'application/javascript';
+              } else if (req.path.endsWith('.css')) {
+                mimeType = 'text/css';
+              } else if (req.path.endsWith('.html')) {
+                mimeType = 'text/html';
+              } else if (!mimeType) {
+                mimeType = 'application/octet-stream';
+              }
+              
+              res.setHeader('Content-Type', mimeType);
+              res.send(content);
+            } else {
+              res.status(404).send('File not found');
+            }
+          } catch (error) {
+            res.status(404).send('File not found');
+          }
+        }
+      } catch (error) {
+        console.error(chalk.red('Error serving file:'), error);
+        res.status(500).send('Internal server error');
+      }
+    });
+  }
+
+  async serveSkaraJS(filePath, res) {
+    try {
+      let content = await fs.readFile(filePath, 'utf-8');
+      
+      // Transform imports to handle Skara extensions
+      content = this.transformImports(content);
+      
+      // Use esbuild to transform modern JS
+      const result = await build({
+        stdin: {
+          contents: content,
+          loader: 'js',
+        },
+        format: 'esm',
+        target: 'es2020',
+        write: false,
+        bundle: false,
+      });
+
+      res.setHeader('Content-Type', 'application/javascript');
+      res.send(result.outputFiles[0].text);
+    } catch (error) {
+      console.error(chalk.red('Error processing .sjs file:'), error);
+      res.status(500).send(`// Error: ${error.message}`);
+    }
+  }
+
+  async serveSkaraJSX(filePath, res) {
+    try {
+      let content = await fs.readFile(filePath, 'utf-8');
+      
+      // Transform imports
+      content = this.transformImports(content);
+      
+      // Use esbuild to transform JSX
+      const result = await build({
+        stdin: {
+          contents: content,
+          loader: 'tsx',
+        },
+        format: 'esm',
+        target: 'es2020',
+        write: false,
+        bundle: false,
+        jsxFactory: 'h',
+        jsxFragment: 'Fragment',
+      });
+
+      res.setHeader('Content-Type', 'application/javascript');
+      res.send(result.outputFiles[0].text);
+    } catch (error) {
+      console.error(chalk.red('Error processing .ssx file:'), error);
+      res.status(500).send(`// Error: ${error.message}`);
+    }
+  }
+
+  async serveSkaraCSS(filePath, res) {
+    try {
+      const content = await fs.readFile(filePath, 'utf-8');
+      
+      // Check if this is a Tailwind-enabled CSS file
+      const hasTailwind = content.includes('@tailwind') || content.includes('@apply');
+      
+      if (hasTailwind) {
+        // Process with PostCSS + Tailwind
+        const tailwindConfigPath = path.join(this.root, 'tailwind.config.js');
+        let tailwindConfig = {};
+        
+        try {
+          // Try to load tailwind config
+          const configExists = await fs.access(tailwindConfigPath).then(() => true).catch(() => false);
+          if (configExists) {
+            // Import the config dynamically
+            const configModule = await import(`file://${tailwindConfigPath}?t=${Date.now()}`);
+            tailwindConfig = configModule.default || configModule;
+            console.log(chalk.green('✅ Loaded tailwind.config.js'));
+          }
+        } catch (configError) {
+          console.log(chalk.yellow('⚠️  Error loading tailwind.config.js:'), configError.message);
+        }
+        
+        const processor = postcss([
+          tailwindcss(tailwindConfig),
+          autoprefixer()
+        ]);
+        
+        const result = await processor.process(content, { 
+          from: filePath,
+          to: filePath 
+        });
+        
+        res.setHeader('Content-Type', 'text/css');
+        res.send(result.css);
+        
+        console.log(chalk.green('✨ Processed .ss file with Tailwind'));
+      } else {
+        // Regular CSS processing
+        res.setHeader('Content-Type', 'text/css');
+        res.send(content);
+      }
+    } catch (error) {
+      console.error(chalk.red('Error processing .ss file:'), error);
+      res.status(500).send(`/* Error: ${error.message} */`);
+    }
+  }
+
+  async serveNodeModule(requestPath, res) {
+    try {
+      // Remove leading /node_modules/ and resolve from project root
+      const modulePath = requestPath.replace('/node_modules/', '');
+      const fullPath = path.join(this.root, 'node_modules', modulePath);
+      
+      const content = await fs.readFile(fullPath, 'utf-8');
+      
+      // Determine content type
+      let contentType = 'application/javascript';
+      if (fullPath.endsWith('.css')) {
+        contentType = 'text/css';
+      } else if (fullPath.endsWith('.json')) {
+        contentType = 'application/json';
+      }
+      
+      res.setHeader('Content-Type', contentType);
+      res.send(content);
+    } catch (error) {
+      console.error(chalk.red('Error serving node module:'), error);
+      res.status(404).send('Module not found');
+    }
+  }
+
+  async servePackage(requestPath, res) {
+    try {
+      // Remove leading /packages/ and resolve from monorepo root
+      const packagePath = requestPath.replace('/packages/', '');
+      const fullPath = path.join(this.root, '..', 'packages', packagePath);
+      
+      const content = await fs.readFile(fullPath, 'utf-8');
+      
+      // Determine content type
+      let contentType = 'application/javascript';
+      if (fullPath.endsWith('.css')) {
+        contentType = 'text/css';
+      } else if (fullPath.endsWith('.json')) {
+        contentType = 'application/json';
+      }
+      
+      res.setHeader('Content-Type', contentType);
+      res.send(content);
+    } catch (error) {
+      console.error(chalk.red('Error serving package:'), error);
+      res.status(404).send('Package not found');
+    }
+  }
+
+  async serveHTML(filePath, res) {
+    try {
+      let htmlPath = filePath;
+      if (filePath.endsWith('/') || !filePath.includes('.')) {
+        htmlPath = path.join(this.root, 'index.html');
+      }
+      
+      let content = await fs.readFile(htmlPath, 'utf-8');
+      
+      // Inject hot reload script
+      content = content.replace(
+        '</body>',
+        `${this.getHotReloadScript()}</body>`
+      );
+      
+      res.setHeader('Content-Type', 'text/html');
+      res.send(content);
+    } catch (error) {
+      console.error(chalk.red('Error serving HTML:'), error);
+      res.status(404).send('HTML file not found');
+    }
+  }
+
+  transformImports(content) {
+    // Transform Skara file extensions in imports
+    content = content.replace(/from\s+['"]([^'"]+)\.sjs['"]/g, "from '$1.sjs'");
+    content = content.replace(/from\s+['"]([^'"]+)\.ssx['"]/g, "from '$1.ssx'");
+    content = content.replace(/from\s+['"]([^'"]+)\.ss['"]/g, "from '$1.ss'");
+    
+    // Transform CSS imports to dynamic link injection
+    content = content.replace(/import\s+['"]([^'"]+)\.ss['"];?/g, (match, path) => {
+      return `
+// Auto-inject CSS for ${path}.ss
+(function() {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = '${path}.ss';
+  document.head.appendChild(link);
+})();`;
+    });
+    
+    // Transform npm package imports to relative paths
+    content = content.replace(/from\s+['"]skara-js['"]/g, "from '../packages/skara-js/src/index.js'");
+    content = content.replace(/import\s+['"]skara-js['"]/g, "import '../packages/skara-js/src/index.js'");
+    
+    return content;
+  }
+
+  getHotReloadScript() {
+    return `
+<script type="module">
+(function() {
+  const ws = new WebSocket('ws://localhost:${this.port}');
+  ws.onmessage = function(event) {
+    if (event.data === 'reload') {
+      console.log('🏛️ Skara Dev Server: Reloading...');
+      window.location.reload();
+    }
+  };
+  ws.onopen = function() {
+    console.log('🏛️ Skara Dev Server: Connected');
+  };
+  ws.onerror = function(error) {
+    console.log('🏛️ Skara Dev Server: Connection error');
+  };
+})();
+</script>`;
+  }
+
+  setupWatcher() {
+    const watcher = chokidar.watch([
+      path.join(this.root, '**/*.sjs'),
+      path.join(this.root, '**/*.ssx'),
+      path.join(this.root, '**/*.ss'),
+      path.join(this.root, '**/*.html'),
+      path.join(this.root, '**/*.js'),
+      path.join(this.root, '**/*.css'),
+    ], {
+      ignored: /node_modules/,
+      persistent: true
+    });
+
+    watcher.on('change', (filePath) => {
+      console.log(chalk.yellow(`📝 File changed: ${path.relative(this.root, filePath)}`));
+      this.broadcast('reload');
+    });
+
+    this.watchers.push(watcher);
+  }
+
+  broadcast(message) {
+    if (this.wss) {
+      this.wss.clients.forEach(client => {
+        if (client.readyState === 1) { // WebSocket.OPEN
+          client.send(message);
+        }
+      });
+    }
+  }
+
+  async stop() {
+    console.log(chalk.yellow('🛑 Stopping Skara Dev Server...'));
+    
+    // Close watchers
+    this.watchers.forEach(watcher => watcher.close());
+    
+    // Close WebSocket server
+    if (this.wss) {
+      this.wss.close();
+    }
+    
+    // Close HTTP server
+    if (this.server) {
+      this.server.close();
+    }
+    
+    console.log(chalk.green('✅ Server stopped'));
+  }
+}

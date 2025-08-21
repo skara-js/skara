@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900;
+    @apply min-h-screen text-white;
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl;
+  }
+  
+  .neon-button {
+    @apply px-6 py-3 rounded-lg font-semibold transition-all duration-300;
+    @apply bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400;
+    @apply shadow-lg hover:shadow-cyan-500/25 hover:scale-105;
+    @apply border border-cyan-400/30 hover:border-cyan-300/50;
+  }
+  
+  .ancient-text {
+    @apply bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-200 bg-clip-text text-transparent;
+    @apply font-bold tracking-wide;
+  }
+  
+  .floating-card {
+    @apply transform transition-all duration-500 hover:scale-105 hover:-translate-y-2;
+    @apply hover:shadow-2xl hover:shadow-purple-500/20;
+  }
+  
+  .cyber-border {
+    @apply border-2 border-transparent bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 p-0.5 rounded-lg;
+  }
+  
+  .cyber-border-inner {
+    @apply bg-gray-900 rounded-md p-4;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  
+  .text-glow {
+    text-shadow: 0 0 10px currentColor;
+  }
+}

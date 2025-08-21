@@ -1,0 +1,41 @@
+{
+  "name": "skara-js-monorepo",
+  "version": "1.0.0",
+  "description": "Skara.js framework and tooling monorepo",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "website"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev": "npm run dev --workspace=website",
+    "dev:website": "npm run dev --workspace=website",
+    "build:website": "npm run build --workspace=website",
+    "build:framework": "npm run build --workspace=packages/skara-js",
+    "create-app": "node packages/create-skara-app/bin/create-skara-app.js",
+    "sra": "node packages/create-skara-app/bin/create-skara-app.js",
+    "skara-dev": "node packages/skara-dev-server/bin/skara-dev.js"
+  },
+  "keywords": [
+    "framework",
+    "reactive",
+    "frontend",
+    "javascript",
+    "skara-brae",
+    "monorepo"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "chalk": "^5.0.0",
+    "commander": "^11.0.0",
+    "fs-extra": "^11.0.0",
+    "inquirer": "^9.0.0"
+  }
+}
