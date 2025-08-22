@@ -1,6 +1,6 @@
 {
   "name": "skara-dev-server",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "Custom development server for Skara.js applications",
   "main": "src/index.js",
   "type": "module",

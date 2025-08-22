@@ -2,7 +2,8 @@
 
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const { program } = require('commander');
+const commander = require('commander');
+const program = new commander.Command();
 import { SkaraDevServer } from '../src/index.js';
 import chalk from 'chalk';
 import path from 'path';

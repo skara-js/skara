@@ -2,7 +2,8 @@
 
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const { program } = require('commander');
+const commander = require('commander');
+const program = new commander.Command();
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';

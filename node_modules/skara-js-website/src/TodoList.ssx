@@ -27,9 +27,7 @@ export function TodoList() {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      addTodo();
-    }
+    if (e.key === 'Enter') addTodo();
   };
 
   return h('div', { className: 'todo-list' },
@@ -44,7 +42,8 @@ export function TodoList() {
       }),
       h('button', { onClick: addTodo, className: 'add-btn' }, 'Add')
     ),
-    h('ul', { className: 'todo-items' },
+    // Make the list reactive by wrapping it in a function
+    () => h('ul', { className: 'todo-items' },
       ...todos.get().map(todo =>
         h('li', { 
           key: todo.id, 

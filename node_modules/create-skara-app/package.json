@@ -1,6 +1,6 @@
 {
   "name": "create-skara-app",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Create Skara.js apps with no build configuration",
   "main": "index.js",
   "type": "module",
