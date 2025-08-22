@@ -1,6 +1,6 @@
 {
   "name": "skara-js",
-  "version": "14.0.0",
+  "version": "140.0.0",
   "description": "A tiny front-end JavaScript framework named after Skara Brae, the Neolithic Pompeii of the Orkney Islands",
   "main": "src/index.js",
   "module": "src/index.js",
