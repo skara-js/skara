@@ -1,9 +1,9 @@
 const CACHE_NAME = 'skara-js-v1';
 const urlsToCache = [
-  '/',
-  '/assets/app.js',
-  '/assets/styles.css',
-  '/assets/favicon.svg'
+  '/skara',
+  '/skara/assets/app.js',
+  '/skara/assets/styles.css',
+  '/skara/assets/favicon.svg'
 ];
 
 self.addEventListener('install', event => {

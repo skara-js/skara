@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "skara-dev",
     "build": "skara-build build",
+    "build:github": "skara-build build --base-path /skara",
     "preview": "skara-build preview",
     "deploy": "netlify deploy --prod"
   },

@@ -33,7 +33,7 @@ jobs:
       - name: 🏗️ Build Skara.js Website
         run: |
           cd website
-          npm run build
+          npm run build:github
           
       - name: 📄 Setup Pages
         uses: actions/configure-pages@v4

@@ -15,6 +15,12 @@ export class SkaraBuild {
     this.root = options.root || process.cwd();
     this.outDir = path.resolve(this.root, options.outDir || 'dist');
     this.srcDir = path.resolve(this.root, 'src');
+    this.basePath = options.basePath || '';
+  }
+
+  getAssetPath(assetPath) {
+    const cleanPath = assetPath.startsWith('/') ? assetPath.slice(1) : assetPath;
+    return this.basePath ? `${this.basePath}/${cleanPath}` : `/${cleanPath}`;
   }
 
   async build() {
@@ -142,24 +148,24 @@ export class SkaraBuild {
   <meta property="og:title" content="Skara.js - Ancient Wisdom, Modern Power">
   <meta property="og:description" content="A React-like framework inspired by the ancient stone circles of Skara Brae. Built to last through the ages.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="/assets/skara-og.png">
+  <meta property="og:image" content="${this.getAssetPath('assets/skara-og.png')}">
   
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Skara.js - Ancient Wisdom, Modern Power">
   <meta name="twitter:description" content="A React-like framework inspired by the ancient stone circles of Skara Brae. Built to last through the ages.">
-  <meta name="twitter:image" content="/assets/skara-og.png">
+  <meta name="twitter:image" content="${this.getAssetPath('assets/skara-og.png')}">
   
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="icon" type="image/svg+xml" href="${this.getAssetPath('assets/favicon.svg')}">
+  <link rel="icon" type="image/png" href="${this.getAssetPath('assets/favicon.png')}">
   
   <!-- Preload critical assets -->
-  <link rel="preload" href="/assets/styles.css" as="style">
-  <link rel="preload" href="/assets/app.js" as="script">
+  <link rel="preload" href="${this.getAssetPath('assets/styles.css')}" as="style">
+  <link rel="preload" href="${this.getAssetPath('assets/app.js')}" as="script">
   
   <!-- Styles -->
-  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="${this.getAssetPath('assets/styles.css')}">
   
   <!-- Analytics placeholder -->
   <!-- Add your analytics code here -->
@@ -189,13 +195,13 @@ export class SkaraBuild {
   </div>
   
   <!-- Scripts -->
-  <script type="module" src="/assets/app.js"></script>
+  <script type="module" src="${this.getAssetPath('assets/app.js')}"></script>
   
   <!-- Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
+        navigator.serviceWorker.register('${this.getAssetPath('sw.js')}')
           .then(registration => console.log('SW registered'))
           .catch(error => console.log('SW registration failed'));
       });
@@ -244,10 +250,10 @@ export class SkaraBuild {
     // Create service worker
     const swContent = `const CACHE_NAME = 'skara-js-v1';
 const urlsToCache = [
-  '/',
-  '/assets/app.js',
-  '/assets/styles.css',
-  '/assets/favicon.svg'
+  '${this.basePath || '/'}',
+  '${this.getAssetPath('assets/app.js')}',
+  '${this.getAssetPath('assets/styles.css')}',
+  '${this.getAssetPath('assets/favicon.svg')}'
 ];
 
 self.addEventListener('install', event => {
