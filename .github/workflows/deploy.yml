@@ -1,4 +1,4 @@
-name: 🏛️ Deploy Skara.js Website
+name: Deploy Skara.js Website
 
 on:
   push:
@@ -11,39 +11,27 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
+    - name: Checkout 🏛️
+      uses: actions/checkout@v3
       
-    - name: 🟢 Setup Node.js
-      uses: actions/setup-node@v4
+    - name: Setup Node.js ⚡
+      uses: actions/setup-node@v3
       with:
         node-version: '18'
         cache: 'npm'
         
-    - name: 📦 Install dependencies
+    - name: Install dependencies 📦
       run: npm ci
       
-    - name: 🏗️ Build website
+    - name: Build website 🏗️
       run: |
         cd website
         npm run build
         
-    - name: 🚀 Deploy to Netlify
-      uses: nwtgck/actions-netlify@v2.0
+    - name: Deploy to GitHub Pages 🚀
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
       with:
-        publish-dir: './website/dist'
-        production-branch: main
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        deploy-message: "🏛️ Deploy from GitHub Actions"
-        enable-pull-request-comment: true
-        enable-commit-comment: true
-        overwrites-pull-request-comment: true
-      env:
-        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        
-    - name: 📊 Lighthouse CI
-      uses: treosh/lighthouse-ci-action@v10
-      with:
-        uploadDir: './website/dist'
-        temporaryPublicStorage: true
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./website/dist
+        cname: skara.dev  # Optional: your custom domain

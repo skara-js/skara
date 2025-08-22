@@ -155,8 +155,8 @@ export class SkaraBuild {
   <link rel="icon" type="image/png" href="/assets/favicon.png">
   
   <!-- Preload critical assets -->
-  <link rel="preload" href="/assets/styles.css" as="style" crossorigin="anonymous">
-  <link rel="preload" href="/assets/app.js" as="script" crossorigin="anonymous">
+  <link rel="preload" href="/assets/styles.css" as="style">
+  <link rel="preload" href="/assets/app.js" as="script">
   
   <!-- Styles -->
   <link rel="stylesheet" href="/assets/styles.css">
