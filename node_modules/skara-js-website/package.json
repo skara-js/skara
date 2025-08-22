@@ -6,12 +6,15 @@
   "type": "module",
   "scripts": {
     "dev": "skara-dev",
-    "build": "echo 'Build coming soon!'",
-    "preview": "echo 'Preview coming soon!'"
+    "build": "skara-build build",
+    "preview": "skara-build preview",
+    "deploy": "netlify deploy --prod"
   },
   "dependencies": {
-    "skara-dev-server": "file:../packages/skara-dev-server",
-    "skara-js": "file:../packages/skara-js"
+    "create-skara-app": "3.0.0",
+    "skara-build": "2.0.0",
+    "skara-dev-server": "5.0.0",
+    "skara-js": "14.0.0"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.10",

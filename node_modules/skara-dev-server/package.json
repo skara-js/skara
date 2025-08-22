@@ -1,6 +1,6 @@
 {
   "name": "skara-dev-server",
-  "version": "4.0.0",
+  "version": "5.0.1",
   "description": "Custom development server for Skara.js applications",
   "main": "src/index.js",
   "type": "module",
@@ -16,8 +16,16 @@
     "development",
     "build-tool"
   ],
-  "author": "",
+  "author": "primejjshandy",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/primejjshandy/skara-js.git"
+  },
+  "homepage": "https://skara-js.netlify.app",
+  "bugs": {
+    "url": "https://github.com/primejjshandy/skara-js/issues"
+  },
   "dependencies": {
     "autoprefixer": "^10.4.21",
     "chalk": "^5.0.0",

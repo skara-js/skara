@@ -1,0 +1,28 @@
+plugins = []
+headers = []
+redirects = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "C:\\Users\\Prime\\OneDrive\\Desktop\\skarajs\\test"
+publishOrigin = "ui"
+commandOrigin = "ui"
+base = "C:\\Users\\Prime\\OneDrive\\Desktop\\skarajs\\test"
+command = "npm run dev"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]

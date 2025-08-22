@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
-import { program } from 'commander';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const { program } = require('commander');
 import { SkaraDevServer } from '../src/index.js';
 import chalk from 'chalk';
 import path from 'path';

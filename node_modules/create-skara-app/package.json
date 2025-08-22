@@ -1,6 +1,6 @@
 {
   "name": "create-skara-app",
-  "version": "1.0.1",
+  "version": "3.0.1",
   "description": "Create Skara.js apps with no build configuration",
   "main": "index.js",
   "type": "module",
@@ -17,8 +17,16 @@
     "cli",
     "scaffold"
   ],
-  "author": "",
+  "author": "primejjshandy",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/primejjshandy/skara-js.git"
+  },
+  "homepage": "https://skara-js.netlify.app",
+  "bugs": {
+    "url": "https://github.com/primejjshandy/skara-js/issues"
+  },
   "files": [
     "bin",
     "templates"

@@ -1,184 +1,384 @@
-# Skara.js
+# 🏛️ Skara.js Framework
 
-> A tiny front-end JavaScript framework named after **Skara Brae**, the "Neolithic Pompeii" of the Orkney Islands - an ancient settlement built in a rubbish heap and reburied in time.
+> **Ancient wisdom meets modern power**
 
-Skara.js combines the best ideas from React, Vue, and Svelte into a lightweight, modern framework with custom file extensions and reactive state management.
+A React-like JavaScript framework inspired by the 5000-year-old stone circles of Skara Brae. Built to last through the ages.
 
-## 🏛️ Philosophy
+[![Deploy Status](https://api.netlify.com/api/v1/badges/your-badge-id/deploy-status)](https://app.netlify.com/sites/your-site/deploys)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)
 
-Just like Skara Brae - built in a rubbish heap and reburied in sand, only to emerge as the most perfectly preserved Neolithic settlement - Skara.js takes the discarded complexity of other frameworks, buries it under a clean API, and emerges as something timeless and beautiful.
+## 🚀 Quick Start
 
-## 🚀 Features
+```bash
+# Create a new Skara.js app
+npx create-skara-app my-ancient-app
+cd my-ancient-app
 
-- **Tiny Runtime**: Minimal core with maximum functionality
-- **Reactive State**: Simple `createState()` API with automatic subscriptions
-- **Virtual DOM**: Efficient diffing and rendering
-- **Custom Extensions**: `.ssx`, `.sjs`, and `.ss` files for organized development
-- **Modern Tooling**: Works seamlessly with Vite and modern build tools
+# Start development server
+npm run dev
 
-## 📁 File Extensions
-
-### `.sjs` - Skara JavaScript Runtime Files
-Framework runtime files written in standard JavaScript. These contain the core framework logic and are processed as regular JS files.
-
-```javascript
-// skara.js
-export function h(tag, props, ...children) { /* ... */ }
-export function createState(initial) { /* ... */ }
-export function mount(componentFn, container) { /* ... */ }
+# Build for production
+npm run build
 ```
 
-### `.ssx` - Skara Script JSX Component Files
-Component files that use JSX-like syntax with the `h()` function. These are compiled like `.tsx` files but use Skara's runtime instead of React.
+## ✨ Features
 
+### 🏛️ **Ancient Architecture**
+- **React-like hooks** - `useState`, `useEffect`
+- **Custom file extensions** - `.ssx`, `.ss`, `.sjs`
+- **JSX-like syntax** - Familiar component structure
+- **Virtual DOM** - Efficient rendering
+
+### ⚡ **Modern Performance**
+- **ESBuild** - Lightning-fast compilation (~50ms)
+- **Hot reload** - Instant development feedback
+- **Tree shaking** - Optimized production bundles
+- **Code splitting** - Automatic optimization
+
+### 🎨 **Beautiful Styling**
+- **Glass morphism** - Built-in design system
+- **Tailwind CSS** - Utility-first styling
+- **Custom properties** - CSS variables support
+- **Responsive design** - Mobile-first approach
+
+### 🛠️ **Developer Experience**
+- **TypeScript** - Full type support
+- **Source maps** - Debug-friendly builds
+- **Error boundaries** - Graceful error handling
+- **Dev tools** - Browser extension support
+
+## 📦 Monorepo Structure
+
+```
+skara-js/
+├── packages/
+│   ├── skara-js/           # Core framework
+│   ├── skara-dev-server/   # Development server
+│   ├── skara-build/        # Build system
+│   └── create-skara-app/   # Project generator
+├── website/                # Official website
+├── examples/               # Example applications
+└── docs/                   # Documentation
+```
+
+## 🏗️ Core Packages
+
+### 🏛️ **skara-js** - Core Framework
 ```javascript
-// Counter.ssx
-import { h, createState } from './skara.js';
+import { h, useState, useEffect } from 'skara-js';
 
-export function Counter(props) {
-  const count = createState(0);
+export function Counter() {
+  const [count, setCount] = useState(0);
   
-  return h('div', null,
-    h('span', null, count.get()),
-    h('button', { onClick: () => count.set(count.get() + 1) }, '+')
+  return (
+    <div className="counter">
+      <h2>Count: {count}</h2>
+      <button onClick={() => setCount(count + 1)}>
+        Increase
+      </button>
+    </div>
   );
 }
 ```
 
-### `.ss` - Skara Stylesheets
-Stylesheet files that are processed exactly like CSS files. Use these for component and application styling.
+### ⚡ **skara-dev-server** - Development Server
+- Hot reload with file watching
+- Custom file extension support
+- Built-in error overlay
+- Live CSS injection
 
-```css
-/* styles.ss */
-.counter {
-  background: white;
-  padding: 1rem;
-  border-radius: 8px;
+### 🏗️ **skara-build** - Production Build System
+- ESBuild integration
+- CSS optimization
+- Asset bundling
+- Service worker generation
+
+### 🚀 **create-skara-app** - Project Generator
+```bash
+npx create-skara-app my-app
+# Creates a new Skara.js project with:
+# - Component structure
+# - Development server
+# - Build configuration
+# - Example components
+```
+
+## 🎨 File Extensions
+
+### `.ssx` - Components
+```javascript
+// Button.ssx
+import { h } from 'skara-js';
+
+export function Button({ children, onClick, variant = 'primary' }) {
+  return (
+    <button 
+      className={`btn btn-${variant}`}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
 }
 ```
 
-## 🛠️ Core API
+### `.ss` - Styles
+```css
+/* styles.ss */
+.btn {
+  @apply px-4 py-2 rounded-lg font-medium transition-all;
+  
+  &.btn-primary {
+    background: linear-gradient(135deg, #38bdf8, #3b82f6);
+    color: white;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(56, 189, 248, 0.4);
+    }
+  }
+}
+```
 
-### `h(tag, props, ...children)`
-Creates virtual DOM nodes (similar to `React.createElement`).
-
+### `.sjs` - JavaScript
 ```javascript
-// Create elements
-h('div', { className: 'container' }, 'Hello World')
-
-// Create components
-h(MyComponent, { prop: 'value' })
-
-// Nested elements
-h('div', null,
-  h('h1', null, 'Title'),
-  h('p', null, 'Content')
-)
+// utils.sjs
+export function formatDate(date) {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+}
 ```
 
-### `createState(initialValue)`
-Creates reactive state with get/set/subscribe methods.
+## 🏛️ Philosophy
 
-```javascript
-const count = createState(0);
+Inspired by **Skara Brae**, the remarkably preserved 5000-year-old Neolithic village:
 
-// Get current value
-console.log(count.get()); // 0
+### 🗿 **Built to Last**
+Like the ancient stone structures, Skara.js is designed for longevity with:
+- Stable API design
+- Backward compatibility
+- Minimal dependencies
+- Timeless patterns
 
-// Set new value (triggers re-render)
-count.set(5);
+### 🌊 **Weathering the Storm**
+Just as Skara Brae survived millennia of harsh weather:
+- Robust error handling
+- Graceful degradation
+- Performance optimization
+- Memory management
 
-// Subscribe to changes
-const unsubscribe = count.subscribe(newValue => {
-  console.log('Count changed to:', newValue);
-});
-```
-
-### `mount(componentFn, container)`
-Mounts a component tree into a DOM container with automatic diffing.
-
-```javascript
-import { mount } from './skara.js';
-import { App } from './App.ssx';
-
-const container = document.getElementById('root');
-mount(() => App(), container);
-```
-
-## 🏗️ Project Structure
-
-```
-skara-js/
-├── src/
-│   ├── skara.js          # Core framework runtime (.js)
-│   ├── App.ssx           # Main app component (.ssx)
-│   ├── Counter.ssx       # Counter component (.ssx)
-│   ├── index.sjs         # Entry point (.sjs)
-│   └── styles.ss         # Application styles (.ss)
-├── vite.config.js        # Vite configuration for custom extensions
-├── package.json
-└── index.html
-```
+### 🏘️ **Community Living**
+The village layout inspires our architecture:
+- Modular components
+- Shared utilities
+- Connected systems
+- Collaborative development
 
 ## 🚀 Getting Started
 
-1. **Install dependencies:**
-```bash
-npm install
-```
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
 
-2. **Start development server:**
+### Installation
 ```bash
+# Global installation
+npm install -g create-skara-app
+
+# Create new project
+create-skara-app my-ancient-app
+cd my-ancient-app
+
+# Start development
 npm run dev
 ```
 
-3. **Build for production:**
-```bash
-npm run build
-```
-
-## 🔧 Vite Configuration
-
-The framework includes a Vite configuration that handles the custom file extensions:
-
-- `.ssx` files are processed as TypeScript JSX
-- `.sjs` files are processed as JavaScript
-- `.ss` files are processed as CSS
-
+### Your First Component
 ```javascript
-// vite.config.js
-export default defineConfig({
-  plugins: [
-    react({ include: /\.(jsx|tsx|ssx)$/ }),
-    // Custom plugin for Skara extensions
-  ],
-  resolve: {
-    extensions: ['.vue', '.html', '.js', '.jsx', '.ts', '.tsx', '.ssx', '.sjs', '.ss']
-  }
-});
+// src/App.ssx
+import { h, useState } from 'skara-js';
+
+export function App() {
+  const [message, setMessage] = useState('Hello Skara!');
+  
+  return (
+    <div className="app">
+      <h1 className="ancient-title">{message}</h1>
+      <button 
+        className="neon-button"
+        onClick={() => setMessage('Ancient Power Activated!')}
+      >
+        🏛️ Transform
+      </button>
+    </div>
+  );
+}
 ```
 
-## 📖 Example Application
+## 📚 Documentation
 
-The included example demonstrates:
+- **[Getting Started](./docs/getting-started.md)** - Installation and setup
+- **[Components](./docs/components.md)** - Creating .ssx components
+- **[Hooks](./docs/hooks.md)** - useState, useEffect, custom hooks
+- **[Styling](./docs/styling.md)** - .ss files and Tailwind integration
+- **[Build System](./docs/build.md)** - Production optimization
+- **[Deployment](./DEPLOYMENT.md)** - Netlify, Vercel, and more
 
-- **Counter.ssx**: A reusable counter component with increment/decrement buttons
-- **App.ssx**: Main application component that renders multiple counters
-- **index.sjs**: Entry point that mounts the app
-- **styles.ss**: Beautiful styling inspired by ancient stone architecture
+## 🌟 Examples
 
-## 🏛️ Why "Skara"?
+### Counter App
+```javascript
+import { h, useState } from 'skara-js';
 
-Skara Brae is a 5,000-year-old Neolithic settlement in Scotland's Orkney Islands, known as the "Neolithic Pompeii." This remarkable village was built in a midden (rubbish heap) around 3200 BCE and later reburied in sand during a great storm, which preserved it perfectly for millennia.
+export function Counter() {
+  const [count, setCount] = useState(0);
+  
+  return (
+    <div className="counter-demo glass-card">
+      <h2 className="ancient-text">Count: {count}</h2>
+      <div className="button-group">
+        <button 
+          className="neon-button"
+          onClick={() => setCount(count - 1)}
+        >
+          ➖
+        </button>
+        <button 
+          className="neon-button"
+          onClick={() => setCount(count + 1)}
+        >
+          ➕
+        </button>
+        <button 
+          className="neon-button red"
+          onClick={() => setCount(0)}
+        >
+          🔄 Reset
+        </button>
+      </div>
+    </div>
+  );
+}
+```
 
-Like this ancient settlement that emerged from humble, discarded materials to become one of the world's most important archaeological sites, Skara.js takes the complexity and "waste" from modern frameworks, buries it under a clean, simple API, and emerges as something both powerful and enduring.
+### Todo List
+```javascript
+import { h, useState } from 'skara-js';
 
-The parallel is perfect: just as Skara Brae was hidden and preserved until the right moment to be rediscovered, Skara.js strips away unnecessary complexity and reveals the essential, timeless patterns of reactive web development.
+export function TodoApp() {
+  const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState('');
+  
+  const addTodo = () => {
+    if (input.trim()) {
+      setTodos([...todos, { 
+        id: Date.now(), 
+        text: input, 
+        done: false 
+      }]);
+      setInput('');
+    }
+  };
+  
+  return (
+    <div className="todo-app glass-card">
+      <h2 className="ancient-text">Ancient Tasks</h2>
+      <div className="todo-input-group">
+        <input 
+          className="todo-input"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+          placeholder="Add a task..."
+        />
+        <button className="neon-button" onClick={addTodo}>
+          ➕ Add
+        </button>
+      </div>
+      
+      <div className="todo-list">
+        {todos.map(todo => (
+          <div key={todo.id} className="todo-item">
+            <span className={todo.done ? 'done' : ''}>
+              {todo.text}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+## 🏛️ Live Demo
+
+Visit our official website to see Skara.js in action:
+
+**[🌐 skara-js.netlify.app](https://skara-js.netlify.app)**
+
+Features:
+- 🏛️ **Epic landing page** with floating animations
+- 📚 **Interactive documentation** with live examples
+- 🎮 **Code playground** with real-time preview
+- ⚡ **Performance demos** showing framework capabilities
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit issues and pull requests.
+We welcome contributions from the community! Like the ancient builders of Skara Brae, we believe in collaborative construction.
+
+### Development Setup
+```bash
+# Clone the repository
+git clone https://github.com/skara-js/skara.git
+cd skara
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Run tests
+npm test
+
+# Build all packages
+npm run build
+```
+
+### Contributing Guidelines
+1. **Fork** the repository
+2. **Create** a feature branch
+3. **Make** your changes
+4. **Add** tests if needed
+5. **Submit** a pull request
 
 ## 📄 License
 
-MIT License - Build something ancient, make it modern.
+MIT License - see [LICENSE](./LICENSE) file for details.
+
+## 🏛️ Acknowledgments
+
+- **Skara Brae** - The ancient Neolithic village that inspired this framework
+- **React** - For pioneering modern component architecture
+- **Vue.js** - For elegant reactivity patterns
+- **Svelte** - For compile-time optimization inspiration
+
+## 🌟 Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=skara-js/skara&type=Date)](https://star-history.com/#skara-js/skara&Date)
+
+---
+
+<div align="center">
+
+**🏛️ Like Skara Brae - Built to Last Through the Ages 🏛️**
+
+*Ancient wisdom meets modern power*
+
+[Website](https://skara-js.netlify.app) • [Documentation](./docs) • [Examples](./examples) • [Community](https://github.com/skara-js/skara/discussions)
+
+</div>

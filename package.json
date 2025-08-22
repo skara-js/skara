@@ -16,7 +16,10 @@
     "build:framework": "npm run build --workspace=packages/skara-js",
     "create-app": "node packages/create-skara-app/bin/create-skara-app.js",
     "sra": "node packages/create-skara-app/bin/create-skara-app.js",
-    "skara-dev": "node packages/skara-dev-server/bin/skara-dev.js"
+    "skara-dev": "node packages/skara-dev-server/bin/skara-dev.js",
+    "deploy": "node deploy.js",
+    "publish": "node publish.js",
+    "publish:dry": "node publish.js --dry-run"
   },
   "keywords": [
     "framework",

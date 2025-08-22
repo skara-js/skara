@@ -1,6 +1,6 @@
 {
   "name": "skara-js",
-  "version": "13.0.0",
+  "version": "14.0.0",
   "description": "A tiny front-end JavaScript framework named after Skara Brae, the Neolithic Pompeii of the Orkney Islands",
   "main": "src/index.js",
   "module": "src/index.js",
@@ -22,11 +22,14 @@
     "skara-brae",
     "virtual-dom"
   ],
-  "author": "",
+  "author": "primejjshandy",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/skara-js.git"
+    "url": "https://github.com/primejjshandy/skara-js.git"
   },
-  "homepage": "https://github.com/your-username/skara-js#readme"
+  "homepage": "https://skara-js.netlify.app",
+  "bugs": {
+    "url": "https://github.com/primejjshandy/skara-js/issues"
+  }
 }
